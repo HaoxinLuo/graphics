@@ -15,6 +15,7 @@ def main():
     global trans,edge,screen,pix
     while(True):
         cache = f.readline().split()
+        cache[1:]=[float(q) if not cache[0]=='file' else q for q in cache[1:]]
         if cache[0] == '#':
             pass
         elif cache[0] == 'line':
@@ -32,11 +33,11 @@ def main():
         elif cache[0] == 'rotate-z':
             rotate(cache[1],2)
         elif cache[0] == 'screen':
-            screen = [cache[1],cache[2],cache[3],cache[4]]
+            screen = cache[1:]
         elif cache[0] == 'pixels':
-            for x in range(cache[1]):
+            for x in range(int(cache[1])):
                 pix.append([])
-                for y in range(cache[2]):
+                for y in range(int(cache[2])):
                     pix[x].append('0 0 0')
         elif cache[0] == 'transform':
             edge = multiM(trans,edge)
@@ -52,8 +53,8 @@ def main():
         elif cache[0] == 'file':
             n = open(cache[1],'w')
             n.write("P3\n "+str(len(pix))+' '+str(len(pix[0]))+"\n 255\n")
-            for y in range len(pix[0]):
-                for x in range len(pix):
+            for y in range(len(pix[0])):
+                for x in range(len(pix)):
                     n.write(pix[x][y] + ' ')
         elif cache[0] == 'end':
             break
@@ -120,13 +121,13 @@ def drawLine(A,B,C,D):
     dy = abs(y2-y1)
     global pix    
     if (dx==0 and dy==0):
-        plot(y1,x1)
+        plot(x1,y1)
     elif (dy==0):
         for x in range(x1,x2+1):
-            plot(y1,x)
+            plot(x,y1)
     elif (dx == 0):
         for y in range(y1,y2+1):
-            plot(y,x1)            
+            plot(x1,y)            
     elif (dy <= dx): #dx > dy
         if x1 > x2:
             x1,y1,x2,y2 = C,D,A,B
@@ -137,7 +138,7 @@ def drawLine(A,B,C,D):
             inc = -1
         y = y1
         for x in range(x1,x2+1):
-            plot(y,x)
+            plot(x,y)
             slope = slope - dy
             if slope < 0:
                 y = y + inc
@@ -152,11 +153,17 @@ def drawLine(A,B,C,D):
             inc = -1
         x = x1
         for y in range(y1,y2+1):
-            plot(y,x)
+            plot(x,y)
             slope = slope - dx
             if slope < 0:
                 x = x + inc
                 slope = slope + dy
+
+def plot(x,y):
+    global pix
+    if (x>= 0 and x<=len(pix)) and (y>= 0 and y<=len(pix[0])):
+        pix[x][y] = '255 255 255'
+
 
 def drawP(m):
     i = 0
@@ -169,9 +176,12 @@ def drawP(m):
     pyt = 0
     pyb = len(pix[0])
     while(i+1<len(m)):
-        A = ( ( (m[i][0]-xl)*(pxr-pxl) )/(xr-xc) )+pxc
+        A = ( ( (m[i][0]-xl)*(pxr-pxl) )/(xr-xl) )+pxl
         B = ( ( (m[i][1]-yb)*(pyt-pyb) )/(yt-yb) )+pyb
-        C = ( ( (m[i+1][0]-xl)*(pxr-pxl) )/(xr-xc) )+pxc
+        C = ( ( (m[i+1][0]-xl)*(pxr-pxl) )/(xr-xl) )+pxl
         D = ( ( (m[i+1][1]-yb)*(pyt-pyb) )/(yt-yb) )+pyb
         i = i + 2
-        drawLine(A,B,C,D)
+        drawLine(int(A),int(B),int(C),int(D))
+
+if __name__ == "__main__":
+    main()
