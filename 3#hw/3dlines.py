@@ -42,7 +42,11 @@ def main():
         elif cache[0] == 'transform':
             edge = multiM(trans,edge)
         elif cache[0] == 'render-parallel':
-            drawP(edge)
+            draw(edge)
+        elif cache[0] == 'render-perspective-cyclops':
+            draw(edge,cache[1],cache[2],cache[3])
+        elif cache[0] == 'render-perspective-stereo':
+            draw(edge,cache[1],cache[2],cache[3],cache[4],cache[5],cache[6])
         elif cache[0] == 'clear-edges':
             edge = createM(0)
         elif cache[0] == 'clear-pixels':
@@ -113,7 +117,7 @@ def rotate(a,d):
         setM(tmp,1,1,cos(radians(a)))
     trans = multiM(tmp,trans)
 
-def drawLine(A,B,C,D):
+def drawLine(A,B,C,D,c='255 255 255'):
     x1 = A
     y1 = B
     x2 = C
@@ -122,14 +126,14 @@ def drawLine(A,B,C,D):
     dy = abs(y2-y1)
     global pix    
     if (dx==0 and dy==0):
-        plot(x1,y1)
+        plot(x1,y1,c)
     elif (dy==0):
         
         for x in range(min(x1,x2+1),max(x1,x2+1)):
-            plot(x,y1)
+            plot(x,y1,c)
     elif (dx == 0):        
         for y in range(min(y1,y2+1),max(y1,y2+1)):
-            plot(x1,y)            
+            plot(x1,y,c)            
     elif (dy <= dx): #dx > dy
         if x1 > x2:
             x1,y1,x2,y2 = C,D,A,B
@@ -140,7 +144,7 @@ def drawLine(A,B,C,D):
             inc = -1
         y = y1
         for x in range(x1,x2+1):
-            plot(x,y)
+            plot(x,y,c)
             slope = slope - dy
             if slope < 0:
                 y = y + inc
@@ -155,38 +159,51 @@ def drawLine(A,B,C,D):
             inc = -1
         x = x1
         for y in range(y1,y2+1):
-            plot(x,y)
+            plot(x,y,c)
             slope = slope - dx
             if slope < 0:
                 x = x + inc
                 slope = slope + dy
 
 
-def plot(x,y):
+def plot(x,y,c):
     global pix
     if (x>= 0 and x<=len(pix)) and (y>= 0 and y<=len(pix[0])):
-        pix[x][y] = '255 255 255'
+        pix[x][y] = c
 
-
-def drawP(m):
+def draw(m,x1='d',y1='d',z1='d',x2='d',y2='d',z2='d'):
     i = 0
-    xl = screen[0]
-    yb = screen[1]
-    xr = screen[2]
-    yt = screen[3]
-    pxl = 0
-    pxr = len(pix)
-    pyt = 0
-    pyb = len(pix[0])
-    while(i+1<len(m)):
-        A = ( ( (m[i][0]-xl)*(pxr-pxl) )/(xr-xl) )+pxl
-        B = ( ( (m[i][1]-yb)*(pyt-pyb) )/(yt-yb) )+pyb
-        C = ( ( (m[i+1][0]-xl)*(pxr-pxl) )/(xr-xl) )+pxl
-        D = ( ( (m[i+1][1]-yb)*(pyt-pyb) )/(yt-yb) )+pyb
+    xl,yb,xr,yt = screen
+    pxl,pxr,pyt,pyb = 0,len(pix),0,len(pix[0])
+    while(i+1<len(m)): 
+        if not x1 == 'd':
+            A = ( ( (m[i][0]-x1) *(0-z1) )/(m[i][2]-z1) )+x1
+            B = ( ( (m[i][1]-y1) *(0-z1) )/(m[i][2]-z1) )+y1
+            C = ( ( (m[i+1][0]-x1) *(0-z1) )/(m[i+1][2]-z1) )+x1
+            D = ( ( (m[i+1][1]-y1) *(0-z1) )/(m[i+1][2]-z1) )+y1
+            A = ( ( (A-xl)*(pxr-pxl) )/(xr-xl) )+pxl
+            B = ( ( (B-yb)*(pyt-pyb) )/(yt-yb) )+pyb
+            C = ( ( (C-xl)*(pxr-pxl) )/(xr-xl) )+pxl
+            D = ( ( (D-yb)*(pyt-pyb) )/(yt-yb) )+pyb
+            if not x2 == 'd':
+                drawLine(int(A),int(B),int(C),int(D),'255 0 0')
+                A = ( ( (m[i][0]-x2) *(0-z2) )/(m[i][2]-z2) )+x2
+                B = ( ( (m[i][1]-y2) *(0-z2) )/(m[i][2]-z2) )+y2
+                C = ( ( (m[i+1][0]-x2) *(0-z2) )/(m[i+1][2]-z2) )+x2
+                D = ( ( (m[i+1][1]-y2) *(0-z2) )/(m[i+1][2]-z2) )+y2
+                A = ( ( (A-xl)*(pxr-pxl) )/(xr-xl) )+pxl
+                B = ( ( (B-yb)*(pyt-pyb) )/(yt-yb) )+pyb
+                C = ( ( (C-xl)*(pxr-pxl) )/(xr-xl) )+pxl
+                D = ( ( (D-yb)*(pyt-pyb) )/(yt-yb) )+pyb
+                drawLine(int(A),int(B),int(C),int(D),'0 255 255')
+        else:
+            A = ( ( (m[i][0]-xl)*(pxr-pxl) )/(xr-xl) )+pxl
+            B = ( ( (m[i][1]-yb)*(pyt-pyb) )/(yt-yb) )+pyb
+            C = ( ( (m[i+1][0]-xl)*(pxr-pxl) )/(xr-xl) )+pxl
+            D = ( ( (m[i+1][1]-yb)*(pyt-pyb) )/(yt-yb) )+pyb
+        if x2 == 'd':
+            drawLine(int(A),int(B),int(C),int(D))            
         i = i + 2
-        drawLine(int(A),int(B),int(C),int(D))
-
-
 
 if __name__ == "__main__":
     main()
