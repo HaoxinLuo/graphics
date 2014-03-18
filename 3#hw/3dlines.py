@@ -41,7 +41,6 @@ def main():
                     pix[x].append('0 0 0')
         elif cache[0] == 'transform':
             edge = multiM(trans,edge)
-            printM(edge,'edgeA')
         elif cache[0] == 'render-parallel':
             drawP(edge)
         elif cache[0] == 'clear-edges':
@@ -185,63 +184,8 @@ def drawP(m):
         C = ( ( (m[i+1][0]-xl)*(pxr-pxl) )/(xr-xl) )+pxl
         D = ( ( (m[i+1][1]-yb)*(pyt-pyb) )/(yt-yb) )+pyb
         i = i + 2
-        if i<=8 or (i>16 and i<=28):
-            drawLine(int(A),int(B),int(C),int(D))
-        else:
-            drawLine2(int(A),int(B),int(C),int(D))
+        drawLine(int(A),int(B),int(C),int(D))
 
-def drawLine2(A,B,C,D):
-    x1 = A
-    y1 = B
-    x2 = C
-    y2 = D
-    dx = abs(x2-x1)
-    dy = abs(y2-y1)
-    global pix    
-    if (dx==0 and dy==0):
-        plot2(x1,y1)
-    elif (dy==0):
-        
-        for x in range(min(x1,x2+1),max(x1,x2+1)):
-            plot2(x,y1)
-    elif (dx == 0):        
-        for y in range(min(y1,y2+1),max(y1,y2+1)):
-            plot2(x1,y)            
-    elif (dy <= dx): #dx > dy
-        if x1 > x2:
-            x1,y1,x2,y2 = C,D,A,B
-        slope = (x2 - x1)/2
-        if y1 < y2:
-            inc = 1
-        else:
-            inc = -1
-        y = y1
-        for x in range(x1,x2+1):
-            plot2(x,y)
-            slope = slope - dy
-            if slope < 0:
-                y = y + inc
-                slope = slope + dx
-    elif (dy > dx): #y major
-        if y1 > y2:
-            x1,y1,x2,y2 = C,D,A,B
-        slope = (y2-y1)/2
-        if x1 < x2:
-            inc = 1
-        else:
-            inc = -1
-        x = x1
-        for y in range(y1,y2+1):
-            plot2(x,y)
-            slope = slope - dx
-            if slope < 0:
-                x = x + inc
-                slope = slope + dy
-
-def plot2(x,y):
-    global pix
-    if (x>= 0 and x<=len(pix)) and (y>= 0 and y<=len(pix[0])):
-        pix[x][y] = '255 0 0'
 
 
 if __name__ == "__main__":
