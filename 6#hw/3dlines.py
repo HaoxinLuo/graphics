@@ -4,7 +4,6 @@ import sys, math
 
 edge = createM(0)
 trans = idenM()
-stack = []
 save = {}
 files = {}
 screen = []
@@ -17,7 +16,7 @@ def main():
         print("no file name given")
         exit(0)
     f = open(sys.argv[1],'r')
-    global trans,edge,screen,pix,save,stack
+    global trans,edge,screen,pix,save
     catchVary(f)
     while(True):                  
         cache = f.readline().split()        
@@ -29,20 +28,15 @@ def main():
         elif cache[0] == 'identity':
             trans = idenM()
         elif cache[0] == 'move':
-            stack.append(move(cache[1],cache[2],cache[3]))
-            trans = stack[-1]
+            trans = multiM(trans,move(cache[1],cache[2],cache[3]))
         elif cache[0] == 'scale':
-            stack.append(scale(cache[1],cache[2],cache[3]))
-            trans = stack[-1]
+            trans = multiM(trans,scale(cache[1],cache[2],cache[3]))
         elif cache[0] == 'rotate-x':
-            stack.append(rotate(cache[1],0))
-            trans = stack[-1]
+            trans = multiM(trans,rotate(cache[1],0))
         elif cache[0] == 'rotate-y':
-            stack.append(rotate(cache[1],1))
-            trans = stack[-1]
+            trans = multiM(trans,rotate(cache[1],1))
         elif cache[0] == 'rotate-z':
-            stack.append(rotate(cache[1],2))
-            trans = stack[-1]
+            trans = multiM(trans,rotate(cache[1],2))
         elif cache[0] == 'screen':
             screen = cache[1:]
         elif cache[0] == 'pixels':
@@ -57,6 +51,7 @@ def main():
             render_box_t(cache[1:])
         elif cache[0] == 'save':
             save[cache[1]] = copyM(trans)
+            trans = idenM()
         elif cache[0]  == 'load':
             trans = copyM(save[cache[1]])
 #        elif cache[0] == 'push':
@@ -98,7 +93,6 @@ def main():
                 pix = []
                 edge = createM(0)
                 trans = idenM()
-                stack = []
                 save = {}
                 screen = []                
                 for v in vari:
@@ -131,7 +125,7 @@ def uSphere():
             addCol(tmp)
             setM(tmp,len(tmp)-1,0,sin(the*a)*cos(phi*a))
             setM(tmp,len(tmp)-1,1,sin(the*a)*sin(phi*a))
-            setM(tmp,len(tmp)-1,2,cos(the*a))
+            setM(tmp,len(tmp)-1,2,-cos(the*a))
             setM(tmp,len(tmp)-1,3,1)
     return tmp
 
@@ -165,7 +159,7 @@ def render_sphere_t(p):
     lT = multiM(rz,lT)
     lT = multiM(m,lT)
     tmp = multiM(lT,tmp)
-    tmp = applyTrans(tmp)
+    tmp = multiM(trans,tmp)
     for i in tmp:
         edge.append(i)
 
@@ -205,7 +199,7 @@ def render_box_t(p):
     lT = multiM(rz,lT)
     lT = multiM(m,lT)
     tmp = multiM(lT,tmp)
-    tmp = applyTrans(tmp)
+    tmp = multiM(trans,tmp)
     for i in tmp:
         edge.append(i)
 
@@ -340,7 +334,7 @@ def drawLine(A,B,C,D,c='255 255 255'):
 
 def plot(x,y,c):
     global pix
-    if (x>= 0 and x<=len(pix)) and (y>= 0 and y<=len(pix[0])):
+    if (x>= 0 and x<len(pix)) and (y>= 0 and y<len(pix[0])):
         pix[x][y] = c
 
 def draw(m,x1='d',y1='d',z1='d',x2='d',y2='d',z2='d'):
