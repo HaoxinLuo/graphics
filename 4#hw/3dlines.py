@@ -75,7 +75,7 @@ def sphere(m,p):
     y = p[2]
     z = p[3]
     a = (2*math.pi)/20
-    for phi in range(0,2):
+    for phi in range(0,11):
         for the in range(0,21):
             addCol(tmp)
             setM(tmp,len(tmp)-1,0,x+(r*sin(the*a)*cos(phi*a)))
