@@ -28,15 +28,15 @@ def main():
         elif cache[0] == 'identity':
             trans = idenM()
         elif cache[0] == 'move':
-            trans = multiM(trans,move(cache[1],cache[2],cache[3]))
+            trans = multiM(move(cache[1],cache[2],cache[3]),trans)
         elif cache[0] == 'scale':
-            trans = multiM(trans,scale(cache[1],cache[2],cache[3]))
+            trans = multiM(scale(cache[1],cache[2],cache[3]),trans)
         elif cache[0] == 'rotate-x':
-            trans = multiM(trans,rotate(cache[1],0))
+            trans = multiM(rotate(cache[1],0),trans)
         elif cache[0] == 'rotate-y':
-            trans = multiM(trans,rotate(cache[1],1))
+            trans = multiM(rotate(cache[1],1),trans)
         elif cache[0] == 'rotate-z':
-            trans = multiM(trans,rotate(cache[1],2))
+            trans = multiM(rotate(cache[1],2),trans)
         elif cache[0] == 'screen':
             screen = cache[1:]
         elif cache[0] == 'pixels':
@@ -54,10 +54,6 @@ def main():
             trans = idenM()
         elif cache[0]  == 'load':
             trans = copyM(save[cache[1]])
-#        elif cache[0] == 'push':
-#            stack.append(trans)
-#        elif cache[0] == 'pop':
-#            trans = stack.pop()
         ######################################################
         elif cache[0] == 'render-parallel':
             draw(edge)
