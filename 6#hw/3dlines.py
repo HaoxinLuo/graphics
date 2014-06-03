@@ -28,15 +28,15 @@ def main():
         elif cache[0] == 'identity':
             trans = idenM()
         elif cache[0] == 'move':
-            trans = multiM(move(cache[1],cache[2],cache[3]),trans)
+            trans = multiM(trans,move(cache[1],cache[2],cache[3]))
         elif cache[0] == 'scale':
-            trans = multiM(scale(cache[1],cache[2],cache[3]),trans)
+            trans = multiM(trans,scale(cache[1],cache[2],cache[3]))
         elif cache[0] == 'rotate-x':
-            trans = multiM(rotate(cache[1],0),trans)
+            trans = multiM(trans,rotate(cache[1],0))
         elif cache[0] == 'rotate-y':
-            trans = multiM(rotate(cache[1],1),trans)
+            trans = multiM(trans,rotate(cache[1],1))
         elif cache[0] == 'rotate-z':
-            trans = multiM(rotate(cache[1],2),trans)
+            trans = multiM(trans,rotate(cache[1],2))
         elif cache[0] == 'screen':
             screen = cache[1:]
         elif cache[0] == 'pixels':
