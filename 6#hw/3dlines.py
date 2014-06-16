@@ -52,7 +52,7 @@ def main():
         elif cache[0] == 'save':
             save[cache[1]] = copyM(trans)
             trans = idenM()
-        elif cache[0]  == 'load':
+        elif cache[0]  == 'restore':
             trans = copyM(save[cache[1]])
         ######################################################
         elif cache[0] == 'render-parallel':
@@ -96,8 +96,9 @@ def main():
                         lower = vari[v][2+(i*4)]
                         upper = vari[v][3+(i*4)]
                         cframe = int(files[cache[1]])
-                        if (cframe >= lower and cframe <= upper):
-                            vari[v][0] = vari[v][i*4] + (cframe*vari[v][1+(i*4)])
+                        if (cframe >= lower and cframe < upper):
+#vari[v][0] = vari[v][i*4] + ((cframe-lower)*vari[v][1+(i*4)]) buggy and assumes 2nd [v] change isn't consequtive
+                            vari[v][0] += vari[v][1+(i*4)]
         ########################################################
         elif cache[0] == 'end':
             break
@@ -116,12 +117,13 @@ def applyTrans(m):
 def uSphere():
     tmp = createM(0)
     a = (math.pi)/10
-    for phi in range(0,21):
-        for the in range(0,11):
+    b = (math.pi)/17
+    for phi in range(35):
+        for the in range(18):
             addCol(tmp)
-            setM(tmp,len(tmp)-1,0,sin(the*a)*cos(phi*a))
-            setM(tmp,len(tmp)-1,1,sin(the*a)*sin(phi*a))
-            setM(tmp,len(tmp)-1,2,-cos(the*a))
+            setM(tmp,len(tmp)-1,0,sin(the*b)*cos(phi*b))
+            setM(tmp,len(tmp)-1,1,sin(the*b)*sin(phi*b))
+            setM(tmp,len(tmp)-1,2,-cos(the*b))
             setM(tmp,len(tmp)-1,3,1)
     return tmp
 
@@ -160,22 +162,22 @@ def render_sphere_t(p):
         edge.append(i)
 
 def trigen_sphere(m,pts):
-    a = 11
-    b = 12
+    a = 18
+    b = 19
     c = 0
     i = 0
     j = len(pts) -1
     while a < j:
-        if ((c+1)%11 != 0):
+        if ((c+1)%18 != 0):
             m.append(pts[a])
             m.append(pts[b])
             m.append(pts[c])
         i = i + 1
         if (i%2 != 0):
             a = a + 1
-            b = a - 11
+            b = a - 18
         else:
-            b = b + 12
+            b = b + 19
             c = c + 1
 
 def render_box_t(p):
@@ -222,12 +224,12 @@ def trigen_cube(pts):
     m.append(pts[6])
     m.append(pts[7])
     
-    m.append(pts[4]) #left
-    m.append(pts[1])
-    m.append(pts[0])
-    m.append(pts[1])
+    m.append(pts[0]) #left
     m.append(pts[4])
     m.append(pts[5])
+    m.append(pts[5])
+    m.append(pts[1])
+    m.append(pts[0])
     
     m.append(pts[4]) #top
     m.append(pts[0])
@@ -236,12 +238,12 @@ def trigen_cube(pts):
     m.append(pts[3])
     m.append(pts[7])
     
-    m.append(pts[1]) #bottom
-    m.append(pts[6])
+    m.append(pts[6]) #bottom
+    m.append(pts[2])
+    m.append(pts[5])
     m.append(pts[2])
     m.append(pts[1])
     m.append(pts[5])
-    m.append(pts[6])
     return m
 
 def move(x,y,z):
@@ -394,7 +396,7 @@ def cull(*args):
     if args[3][0] != 'd':
         e = args[3]
     else:
-        e = [0,0,4]
+        e = [p1[0],p1[1],4]
     s = [[p1[0]-e[0],p1[1]-e[1],p1[2]-e[2]]]
     t1 = [[p2[0]-p1[0],p2[1]-p1[1],p2[2]-p1[2]]]
     t2 = [[p3[0]-p2[0],p3[1]-p2[1],p3[2]-p2[2]]]
