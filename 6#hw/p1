@@ -1,0 +1,21 @@
+# Animation homework problem #1
+frames 1 50
+screen -3 -2 3 2
+pixels 600 400
+vary middle-sphere 0 180 1 50
+vary left-box 0 360 1 50
+vary right-box 0 360 1 50
+save origin
+rotate-x middle-sphere
+sphere-t 1 1 1 30 0 0 0 0 0
+restore origin
+move 2 0 0
+rotate-x right-box
+box-t .5 2 .5 0 right-box  0 0 0 0
+restore origin
+move -2 0 0
+rotate-y left-box
+box-t .5 2 .5 30 0 0 0 0 0
+render-parallel
+files ex1_
+end
