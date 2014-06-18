@@ -105,15 +105,6 @@ def main():
         else:
             pass
 
-def applyTrans(m):
-    global trans
-    i = len(stack)-1
-    while i >= 0:
-        trans = stack[i]
-        m = multiM(trans,m)
-        i= i - 1
-    return m
-
 def uSphere():
     tmp = createM(0)
     a = (math.pi)/10
@@ -388,6 +379,9 @@ def draw(m,x1='d',y1='d',z1='d',x2='d',y2='d',z2='d'):
                 drawLine(int(A),int(B),int(E),int(F))            
                 drawLine(int(C),int(D),int(E),int(F))            
         i = i + 3
+
+def plane(*args):
+    
 
 def cull(*args):
     p1 = args[0]
