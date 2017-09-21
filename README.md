@@ -1,4 +1,4 @@
-graphics
+highschool graphics course
 ========
 
 hmm...
